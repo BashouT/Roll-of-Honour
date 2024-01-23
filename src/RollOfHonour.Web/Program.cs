@@ -11,9 +11,8 @@ using RollOfHonour.Data.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddAzureAppConfiguration(builder.Configuration.GetConnectionString("AzureAppConfiguration"));
-
 builder.Services.AddDbContext<RollOfHonourContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"),
+    options.UseSqlServer(System.Environment.GetEnvironmentVariable("ConnectionString"),
         x => x.UseNetTopologySuite()));
 
 builder.Services.Configure<Storage>(builder.Configuration.GetSection(nameof(AppSettings.Storage)));
@@ -69,7 +68,7 @@ using (var scope = app.Services.CreateScope())
     var services = scope.ServiceProvider;
 
     var context = services.GetRequiredService<RollOfHonourContext>();
-    
+
     context.Database.Migrate();
 
     // seed db roles/claims
